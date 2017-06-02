@@ -7,4 +7,7 @@ gem 'dotenv'
 gem 'eventmachine'
 gem 'faye-websocket'
 
-gem 'pry'
+group :development do
+  gem 'pry'
+  gem 'pry-byebug'
+end
