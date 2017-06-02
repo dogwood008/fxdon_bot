@@ -1,14 +1,52 @@
-require_relative './client'
+require_relative './setting'
 require 'dotenv/load'
 
-client = Client.new
-client = Mastodon::REST::Client.new(base_url: ENV['MASTODON_URL'],
-                                    bearer_token: ENV['MASTODON_ACCESS_TOKEN'])
+class Bot
+  TOOT_EXTRACT_REGEX =
+    /<p><span class="h-card"><a href="https?:\/\/[\S]+" class="u-url mention">@<span>fxdon<\/span><\/a><\/span> (.+)<\/p>/
 
+  def toot(message)
+    client.create_status(message)
+  end
 
-## messageに定期トゥートする文言を設定
-message = ("test toot")
-response = client.create_status(message)
+  def user
+    stream.user do |s|
+      next unless s.is_a?(Mastodon::Notification)
+      username = s.account.username
+      content = extract_toot(s.status.content)
+      toot("@#{username} #{content}")
+    end
+  end
 
-## 結果の出力
-pp response
+  def hashtag(tag)
+    stream.hashtag(tag) do |s|
+      pp s
+    end
+  end
+
+  def firehose
+    stream.firehose do |s|
+      pp s
+    end
+  end
+
+  private
+
+  def setting
+    @setting ||= Setting.new
+  end
+
+  def client
+    @client ||= Mastodon::REST::Client.new(base_url: setting.base_url,
+                                           bearer_token: setting.access_token)
+  end
+
+  def stream
+    @stream ||= Mastodon::Streaming::Client.new(base_url: setting.api_base_url,
+                                                bearer_token: setting.access_token)
+  end
+
+  def extract_toot(content)
+    content.match(TOOT_EXTRACT_REGEX) { $1 }
+  end
+end

@@ -7,24 +7,46 @@ require 'mastodon'
 require 'highline/import'
 require 'oauth2'
 require 'dotenv'
-require 'pp'
+require 'uri'
 
-class Client
-  attr_reader :client
-
+class Setting
   ##デフォルト環境の設定
-  DEFAULT_APP_NAME = 'mastodon-cli-sample'.freeze
-  DEFAULT_MASTODON_URL = 'https://mstdn.jp'.freeze
   FULL_ACCESS_SCOPES = 'read write follow'.freeze
 
   def initialize
     Dotenv.load
     setup_env if env_already_set?
-    @client = Mastodon::REST::Client.new(base_url: ENV['MASTODON_URL'],
-                                         bearer_token: ENV['MASTODON_ACCESS_TOKEN'])
+  end
+
+  def app_name
+    ENV['APP_NAME'] || 'fxdon'
+  end
+
+  def base_url
+    ENV['MASTODON_URL']
+  end
+
+  def api_base_url
+    ENV['MASTODON_API_URL']
+  end
+
+  def host
+    URI.parse(base_url).host
+  end
+
+  def access_token
+    ENV['MASTODON_ACCESS_TOKEN']
   end
 
   private
+
+  def scopes
+    ENV['MASTODON_SCOPES'] || FULL_ACCESS_SCOPES
+  end
+
+  def base_url=(base_url)
+    ENV['MASTODON_URL'] = base_url
+  end
 
   def env_already_set?
     !ENV['MASTODON_URL']&.empty? && !ENV['MASTODON_ACCESS_TOKEN']&.empty? &&
@@ -39,21 +61,19 @@ class Client
 
   def check_instance_and_url
     ##インスタンスとURLの確認
-    if !ENV['MASTODON_URL']
-      ENV['MASTODON_URL'] = ask('Instance URL: '){|q| q.default = DEFAULT_MASTODON_URL}
+    if !base_url
+      base_url = ask('Instance URL: ')
       File.open(".env","a+") do |f|
-        f.write "MASTODON_URL = '#{ENV['MASTODON_URL']}'\n"
+        f.write "MASTODON_URL = '#{base_url}'\n"
       end
     end
-    @scopes = ENV['MASTODON_SCOPES'] || FULL_ACCESS_SCOPES
-    @app_name = ENV['MASTODON_APP_NAME'] || DEFAULT_APP_NAME
   end
 
   def check_client_id
     ##クライアントIDの確認
     if !ENV['MASTODON_CLIENT_ID'] || !ENV['MASTODON_CLIENT_SECRET']
       client = Mastodon::REST::Client.new(base_url: ENV['MASTODON_URL'])
-      app = client.create_app(@app_name, "urn:ietf:wg:oauth:2.0:oob", @scopes)
+      app = client.create_app(app_name, "urn:ietf:wg:oauth:2.0:oob", scopes)
       ENV['MASTODON_CLIENT_ID'] = app.client_id
       ENV['MASTODON_CLIENT_SECRET'] = app.client_secret
       File.open(".env","a+") do |f|
@@ -71,7 +91,7 @@ class Client
                                   site: ENV['MASTODON_URL'])
       login_id = ask('Your Account: ')
       password = ask('Your Password: ')
-      token = client.password.get_token(login_id,password, scope: @scopes)
+      token = client.password.get_token(login_id,password, scope: scopes)
       ENV['MASTODON_ACCESS_TOKEN'] = token.token
       File.open('.env','a+') do |f|
         f.write "MASTODON_ACCESS_TOKEN = '#{ENV['MASTODON_ACCESS_TOKEN']}'\n"
