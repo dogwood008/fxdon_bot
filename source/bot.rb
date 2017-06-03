@@ -44,7 +44,10 @@ class Bot
 
   def allocate(username, content, original_toot_id, original_toot_user_id)
     split_content = content.sub('　', ' ').split(' ')
-    help(username) if split_content.size == 1
+    if split_content.size == 1
+      help(username, original_toot_id, original_toot_user_id)
+      return
+    end
     command = split_content.shift
     case command
     when 'echo'
@@ -55,9 +58,8 @@ class Bot
   end
 
   def help(username, original_toot_id, original_toot_user_id)
-    content = "コマンド書式 &#64;fxdon コマンド\nコマンド一覧\n　・buy/ask/買い/買 USDを成行で購入します。\n　・sell/bid/売り/売 USDを成行で売却します。"
-    raise NotImplementedError
-    toot(username, content)
+    content = "\nコマンド書式:\n　@fxdon コマンド\nコマンド一覧\n　・buy/ask/買い/買 USDを成行で購入します。\n　・sell/bid/売り/売 USDを成行で売却します。"
+    reply(username, content, original_toot_id, original_toot_user_id)
   end
 
   def echo(username, content, original_toot_id, original_toot_user_id)
