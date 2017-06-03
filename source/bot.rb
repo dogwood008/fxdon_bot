@@ -52,6 +52,8 @@ class Bot
     case command
     when 'echo'
       echo(username, content.sub('echo ', ''), original_toot_id, original_toot_user_id)
+    when *%w(buy ask 買い 買 sell bid 売り 売)
+      order(username, split_content.shift, original_toot_id, original_toot_user_id)
     else
       help(username, original_toot_id, original_toot_user_id)
     end
@@ -64,6 +66,10 @@ class Bot
 
   def echo(username, content, original_toot_id, original_toot_user_id)
     reply(username, content, original_toot_id, original_toot_user_id)
+  end
+
+  def order(username, command, original_toot_id, original_toot_user_id)
+    reply(username, '注文します: ' + command, original_toot_id, original_toot_user_id)
   end
 
   def setting
