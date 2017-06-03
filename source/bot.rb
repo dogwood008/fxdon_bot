@@ -1,12 +1,20 @@
 require_relative './setting'
 require 'dotenv/load'
+require 'pp'
 
 class Bot
   TOOT_EXTRACT_REGEX =
     /<p><span class="h-card"><a href="https?:\/\/[\S]+" class="u-url mention">@<span>fxdon<\/span><\/a><\/span> (.+)<\/p>/
 
-  def toot(message)
-    client.create_status(message)
+  def toot(message, option = {})
+    client.create_status(message, option)
+  end
+
+  def reply(user, message, in_reply_to_id, in_reply_to_account_id)
+    content = "@#{user} #{message}"
+    option = { in_reply_to_id: in_reply_to_id,
+               in_reply_to_account_id: in_reply_to_account_id }
+    toot(content, option)
   end
 
   def user
@@ -14,7 +22,9 @@ class Bot
       next unless s.is_a?(Mastodon::Notification)
       username = s.account.username
       content = extract_toot(s.status.content)
-      toot("@#{username} #{content}")
+      original_toot_id = s.status.id
+      original_toot_user_id = s.status.account.id
+      allocate(username, content, original_toot_id, original_toot_user_id)
     end
   end
 
@@ -31,6 +41,28 @@ class Bot
   end
 
   private
+
+  def allocate(username, content, original_toot_id, original_toot_user_id)
+    split_content = content.sub('　', ' ').split(' ')
+    help(username) if split_content.size == 1
+    command = split_content.shift
+    case command
+    when 'echo'
+      echo(username, content.sub('echo ', ''), original_toot_id, original_toot_user_id)
+    else
+      help(username, original_toot_id, original_toot_user_id)
+    end
+  end
+
+  def help(username, original_toot_id, original_toot_user_id)
+    content = "コマンド書式 &#64;fxdon コマンド\nコマンド一覧\n　・buy/ask/買い/買 USDを成行で購入します。\n　・sell/bid/売り/売 USDを成行で売却します。"
+    raise NotImplementedError
+    toot(username, content)
+  end
+
+  def echo(username, content, original_toot_id, original_toot_user_id)
+    reply(username, content, original_toot_id, original_toot_user_id)
+  end
 
   def setting
     @setting ||= Setting.new
