@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 require_relative './setting'
+require_relative './order'
 require 'dotenv/load'
 require 'pp'
 
