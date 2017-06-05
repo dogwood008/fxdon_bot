@@ -6,6 +6,9 @@ gem 'oauth2'
 gem 'dotenv'
 gem 'eventmachine'
 gem 'faye-websocket'
+gem 'redis'
+gem 'redis-objects'
+gem 'connection_pool'
 
 group :development do
   gem 'pry'
