@@ -9,6 +9,7 @@ gem 'faye-websocket'
 gem 'redis'
 gem 'redis-objects'
 gem 'connection_pool'
+gem 'foreman'
 
 group :development do
   gem 'pry'
