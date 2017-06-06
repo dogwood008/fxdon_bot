@@ -10,6 +10,8 @@ gem 'redis'
 gem 'redis-objects'
 gem 'connection_pool'
 gem 'foreman'
+gem 'fake_sqs'
+gem 'aws-sdk'
 
 group :development do
   gem 'pry'
