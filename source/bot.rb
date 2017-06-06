@@ -3,6 +3,8 @@
 require_relative './setting'
 require_relative './order/buy'
 require_relative './order/sell'
+require_relative './sqs/fake_sqs'
+
 require 'dotenv/load'
 require 'pp'
 
