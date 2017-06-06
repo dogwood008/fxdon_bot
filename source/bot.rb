@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require_relative './setting'
-require_relative './redis_setting'
-require_relative './order'
 require_relative './order/buy'
 require_relative './order/sell'
 require 'dotenv/load'

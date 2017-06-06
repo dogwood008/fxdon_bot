@@ -1,13 +1,7 @@
 # frozen_string_literal: true
 
-require_relative './redis_setting'
-
 class Order
-  RedisSetting.instance
-  include Redis::Objects
-
-  value   :price
-  value   :unit
+  attr_reader :price, :unit
 
   def initialize(price, unit)
     @price = price
