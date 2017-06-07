@@ -1,12 +1,20 @@
 require_relative './setting'
 require 'dotenv/load'
+require 'pp'
 
 class Bot
   TOOT_EXTRACT_REGEX =
     /<p><span class="h-card"><a href="https?:\/\/[\S]+" class="u-url mention">@<span>fxdon<\/span><\/a><\/span> (.+)<\/p>/
 
-  def toot(message)
-    client.create_status(message)
+  def toot(message, option = {})
+    client.create_status(message, option)
+  end
+
+  def reply(user, message, in_reply_to_id, in_reply_to_account_id)
+    content = "@#{user} #{message}"
+    option = { in_reply_to_id: in_reply_to_id,
+               in_reply_to_account_id: in_reply_to_account_id }
+    toot(content, option)
   end
 
   def user
@@ -14,7 +22,9 @@ class Bot
       next unless s.is_a?(Mastodon::Notification)
       username = s.account.username
       content = extract_toot(s.status.content)
-      toot("@#{username} #{content}")
+      original_toot_id = s.status.id
+      original_toot_user_id = s.status.account.id
+      allocate(username, content, original_toot_id, original_toot_user_id)
     end
   end
 
@@ -31,6 +41,36 @@ class Bot
   end
 
   private
+
+  def allocate(username, content, original_toot_id, original_toot_user_id)
+    split_content = content.sub('　', ' ').split(' ')
+    if split_content.size == 1
+      help(username, original_toot_id, original_toot_user_id)
+      return
+    end
+    command = split_content.shift
+    case command
+    when 'echo'
+      echo(username, content.sub('echo ', ''), original_toot_id, original_toot_user_id)
+    when *%w(buy ask 買い 買 sell bid 売り 売)
+      order(username, split_content.shift, original_toot_id, original_toot_user_id)
+    else
+      help(username, original_toot_id, original_toot_user_id)
+    end
+  end
+
+  def help(username, original_toot_id, original_toot_user_id)
+    content = "\nコマンド書式:\n　@fxdon コマンド\nコマンド一覧\n　・buy/ask/買い/買 USDを成行で購入します。\n　・sell/bid/売り/売 USDを成行で売却します。"
+    reply(username, content, original_toot_id, original_toot_user_id)
+  end
+
+  def echo(username, content, original_toot_id, original_toot_user_id)
+    reply(username, content, original_toot_id, original_toot_user_id)
+  end
+
+  def order(username, command, original_toot_id, original_toot_user_id)
+    reply(username, '注文します: ' + command, original_toot_id, original_toot_user_id)
+  end
 
   def setting
     @setting ||= Setting.new
