@@ -24,6 +24,17 @@ class Order
     to_h.to_json
   end
 
+  def bid_or_ask
+    case sell_or_buy&.to_sym
+    when :sell
+      :bid
+    when :buy
+      :ask
+    else
+      raise SellOrBuyNotGivenError
+    end
+  end
+
   class << self
     def create_from_json(json_string)
       j = JSON.parse(json_string, symbolize_names: true)
