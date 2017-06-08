@@ -10,12 +10,6 @@ class Order
     @unit = unit
   end
 
-  def self.create_from_json(json_string)
-    j = JSON.parse(json_string, symbolize_names: true)
-    klass = get_buy_or_sell_class_by_name(j[:buy_or_sell])
-    klass.new(j[:price], j[:unit])
-  end
-
   def to_h
     {
       price: @price,
@@ -28,16 +22,24 @@ class Order
     to_h.to_json
   end
 
-  private
+  class << self
+    def create_from_json(json_string)
+      j = JSON.parse(json_string, symbolize_names: true)
+      klass = get_buy_or_sell_class_by_name(j[:buy_or_sell])
+      klass.new(j[:price], j[:unit])
+    end
 
-  def get_buy_or_sell_class_by_name(buy_or_sell)
-    case buy_or_sell&.to_sym
-    when :buy
-      Order::Buy
-    when :sell
-      Order::Sell
-    else
-      raise ArgumentError
+    private
+
+    def get_buy_or_sell_class_by_name(buy_or_sell)
+      case buy_or_sell&.to_sym
+      when :buy
+        Order::Buy
+      when :sell
+        Order::Sell
+      else
+        raise ArgumentError
+      end
     end
   end
 end
