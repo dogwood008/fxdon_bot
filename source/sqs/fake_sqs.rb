@@ -5,6 +5,7 @@ require_relative '../sqs'
 class Sqs::FakeSqs < Sqs
   def initialize
     client
+    create_queue
   end
 
   private
