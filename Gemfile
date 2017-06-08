@@ -6,6 +6,9 @@ gem 'oauth2'
 gem 'dotenv'
 gem 'eventmachine'
 gem 'faye-websocket'
+gem 'foreman'
+gem 'fake_sqs'
+gem 'aws-sdk'
 
 group :development do
   gem 'pry'
