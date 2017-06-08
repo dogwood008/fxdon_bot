@@ -9,6 +9,7 @@ gem 'faye-websocket'
 gem 'foreman'
 gem 'fake_sqs'
 gem 'aws-sdk'
+gem 'oanda_api'
 
 group :development do
   gem 'pry'
