@@ -6,6 +6,8 @@ require 'aws-sdk'
 
 class Sqs
   include Singleton
+  # http://docs.aws.amazon.com/sdkforruby/api/Aws/SQS/Client.html#receive_message-instance_method
+  MAX_NUMBER_OF_MESSAGES = 10.freeze
 
   def initialize
     raise NotImplementedError
@@ -24,8 +26,13 @@ class Sqs
                         message_body: message_body.to_json)
   end
 
-  def receive_message
-    client.receive_message(queue_url: queue_url)
+  def receive_messages(max_number_of_messages = MAX_NUMBER_OF_MESSAGES)
+    client.receive_message(queue_url: queue_url,
+                           max_number_of_messages: max_number_of_messages)
+  end
+
+  def purge_queue
+    client.purge_queue(queue_url: queue_url)
   end
 
   private
