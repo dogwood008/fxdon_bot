@@ -3,7 +3,7 @@
 require_relative '../order'
 
 class Order::Sell < Order
-  def buy_or_sell
+  def sell_or_buy
     :sell
   end
 end

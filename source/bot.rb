@@ -4,6 +4,8 @@ require_relative './setting'
 require_relative './order/buy'
 require_relative './order/sell'
 require_relative './sqs/fake_sqs'
+require_relative './service/fx_service'
+require_relative './service/queue_service'
 
 require 'dotenv/load'
 require 'pp'

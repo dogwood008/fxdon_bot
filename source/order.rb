@@ -3,6 +3,8 @@
 require 'json'
 
 class Order
+  class SellOrBuyNotGivenError < StandardError; end
+
   attr_reader :price, :unit
 
   def initialize(price, unit)
@@ -22,23 +24,34 @@ class Order
     to_h.to_json
   end
 
+  def bid_or_ask
+    case sell_or_buy&.to_sym
+    when :sell
+      :bid
+    when :buy
+      :ask
+    else
+      raise SellOrBuyNotGivenError
+    end
+  end
+
   class << self
     def create_from_json(json_string)
       j = JSON.parse(json_string, symbolize_names: true)
-      klass = get_buy_or_sell_class_by_name(j[:buy_or_sell])
+      klass = get_sell_or_buy_class_by_name(j[:sell_or_buy])
       klass.new(j[:price], j[:unit])
     end
 
     private
 
-    def get_buy_or_sell_class_by_name(buy_or_sell)
-      case buy_or_sell&.to_sym
-      when :buy
-        Order::Buy
+    def get_sell_or_buy_class_by_name(sell_or_buy)
+      case sell_or_buy&.to_sym
       when :sell
         Order::Sell
+      when :buy
+        Order::Buy
       else
-        raise ArgumentError
+        raise SellOrBuyNotGivenError
       end
     end
   end
