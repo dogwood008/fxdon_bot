@@ -52,16 +52,12 @@ class Bot
 
   def allocate(username, content, original_toot_id, original_toot_user_id)
     split_content = content.sub('　', ' ').split(' ')
-    if split_content.size == 1
-      help(username, original_toot_id, original_toot_user_id)
-      return
-    end
     command = split_content.shift
     case command
     when 'echo'
       echo(username, content.sub('echo ', ''), original_toot_id, original_toot_user_id)
-    when *%w(buy ask 買い 買 sell bid 売り 売)
-      order(username, split_content.shift, original_toot_id, original_toot_user_id)
+    when *Order.all_verbs
+      order(username, command, original_toot_id, original_toot_user_id)
     else
       help(username, original_toot_id, original_toot_user_id)
     end
@@ -77,6 +73,15 @@ class Bot
   end
 
   def order(username, command, original_toot_id, original_toot_user_id)
+    order = case command
+            when *Order::Buy.verbs
+              Order::Buy.new(nil, nil)
+            when *Order::Sell.verbs
+              Order::Sell.new(nil, nil)
+            else
+              raise Order::SellOrBuyNotGivenError
+            end
+    queue_service.push(order)
     reply(username, '注文します: ' + command, original_toot_id, original_toot_user_id)
   end
 
@@ -96,5 +101,9 @@ class Bot
 
   def extract_toot(content)
     content.match(TOOT_EXTRACT_REGEX) { $1 }
+  end
+
+  def queue_service
+    QueueService.instance
   end
 end
