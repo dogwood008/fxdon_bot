@@ -16,7 +16,7 @@ class Order
     {
       price: @price,
       unit: @unit,
-      buy_or_sell: buy_or_sell
+      sell_or_buy: sell_or_buy
     }
   end
 
