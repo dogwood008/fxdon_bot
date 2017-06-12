@@ -52,10 +52,6 @@ class Bot
 
   def allocate(username, content, original_toot_id, original_toot_user_id)
     split_content = content.sub('　', ' ').split(' ')
-    if split_content.size == 1
-      help(username, original_toot_id, original_toot_user_id)
-      return
-    end
     command = split_content.shift
     case command
     when 'echo'
