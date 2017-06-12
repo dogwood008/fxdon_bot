@@ -35,11 +35,19 @@ class Order
     end
   end
 
+  def self.verbs
+    raise NotImplementedError
+  end
+
   class << self
     def create_from_json(json_string)
       j = JSON.parse(json_string, symbolize_names: true)
       klass = get_sell_or_buy_class_by_name(j[:sell_or_buy])
       klass.new(j[:price], j[:unit])
+    end
+
+    def all_verbs
+      [Order::Buy.verbs, Order::Sell.verbs].flatten
     end
 
     private
