@@ -38,6 +38,7 @@ GEM
     buftok (0.2.0)
     builder (3.2.3)
     byebug (9.0.6)
+    chronic (0.10.2)
     coderay (1.1.1)
     domain_name (0.5.20170404)
       unf (>= 0.0.5, < 1.0.0)
@@ -111,6 +112,8 @@ GEM
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
+    whenever (0.9.7)
+      chronic (>= 0.6.3)
 
 PLATFORMS
   ruby
@@ -129,6 +132,7 @@ DEPENDENCIES
   oauth2
   pry
   pry-byebug
+  whenever
 
 BUNDLED WITH
    1.15.1
