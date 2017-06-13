@@ -35,6 +35,14 @@ class Order
     end
   end
 
+  def buy?
+    raise NotImplementedError
+  end
+
+  def sell?
+    raise NotImplementedError
+  end
+
   class << self
     def create_from_json(json_string)
       j = JSON.parse(json_string, symbolize_names: true)
