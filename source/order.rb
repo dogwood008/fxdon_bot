@@ -4,6 +4,7 @@ require 'json'
 
 class Order
   class SellOrBuyNotGivenError < StandardError; end
+  class UnitHasAlreadyGivenError < StandardError; end
 
   attr_reader :price, :unit
 
@@ -41,6 +42,11 @@ class Order
 
   def sell?
     raise NotImplementedError
+  end
+
+  def unit=(units)
+    raise UnitHasAlreadyGivenError if @unit
+    @unit = units
   end
 
   class << self
