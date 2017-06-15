@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './order/buy'
-require_relative './order/sell'
-require_relative './sqs/fake_sqs'
-require_relative './service/fx_service'
-require_relative './service/queue_service'
+require_relative '../../source/bot'
 
 class Trader
   UNITS_LIMIT = 10_000.freeze
@@ -13,10 +9,14 @@ class Trader
     buy_orders_size, sell_orders_size = fetch_and_check_queue
     order_units = resize_units(order_units(buy_orders_size, sell_orders_size))
     return if order_units <= 0
-    klass = order_class(buy_orders_size, sell_orders_size)
-    return if klass.nil?
-    klass.unit = order_units
-    fx_service.order(klass)
+    order = order_class(buy_orders_size, sell_orders_size)
+    return if order.nil?
+    order.unit = order_units
+    fx_service.order(order)
+    require 'pry';binding.pry
+    b = Bot.new
+    b.toot("注文が成立しました: %s, Unit: %d" %
+           [order.sell_or_buy, order.unit])
   end
 
   private
@@ -40,7 +40,7 @@ class Trader
                        else
                          0
                        end
-    return if order_class_size == 0
+    return 0 if order_class_size == 0
     all_orders_size = (buy_orders_size + sell_orders_size).to_f
     (UNITS_LIMIT * order_class_size / all_orders_size).to_i
   end
