@@ -9,8 +9,6 @@ class FxService
   class TokenNotGivenError < StandardError; end
   class AccountNotGivenError < StandardError; end
 
-  JSON_EXTREACT_REGEX = /\n(\{.+?})/m
-
   def initialize
     client
   end
@@ -32,7 +30,7 @@ class FxService
   def position
     client.account(account).position(instrument).get
   rescue OandaAPI::RequestError => e
-    message = parse_error_message(e.message)
+    message = e.parsed_error_message
     if message[:code] == 14 && message[:message] == 'Position not found'
       nil
     else
@@ -74,8 +72,12 @@ class FxService
   def instrument
     'USD_JPY'
   end
+end
 
-  def parse_error_message(message)
+class OandaAPI::RequestError
+  JSON_EXTREACT_REGEX = /\n(\{.+?})/m
+
+  def parsed_error_message
     json = message.match(JSON_EXTREACT_REGEX) { $1 }
     JSON.parse(json, symbolize_names: true)
   end
