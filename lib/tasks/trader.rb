@@ -12,11 +12,20 @@ class Trader
     order = order_class(buy_orders_size, sell_orders_size)
     return if order.nil?
     order.unit = order_units
-    fx_service.order(order)
-    require 'pry';binding.pry
+    puts "Order: #{order.inspect}"
     b = Bot.new
+    fx_service.order(order)
     b.toot("注文が成立しました: %s, Unit: %d" %
            [order.sell_or_buy, order.unit])
+  rescue OandaAPI::RequestError => e
+    mes = e.parsed_error_message
+    if mes[:code] == 24 && mes[:message] != 'Instrument trading halted'
+      b.toot("休場のため、注文は成立しませんでした: %s, Unit: %d" %
+             [order.sell_or_buy, order.unit])
+    else
+      b.toot("エラーのため、注文は成立しませんでした: %s, Unit: %d" %
+             [order.sell_or_buy, order.unit])
+    end
   end
 
   private
