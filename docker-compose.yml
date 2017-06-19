@@ -22,7 +22,7 @@ services:
     build: .
     restart: always
     env_file: .env
-    command: 'bundle exec rake queue:check'
+    command: 'bundle exec ruby ./queue_check.rb'
     depends_on:
       - daemon
     volumes:
