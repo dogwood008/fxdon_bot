@@ -19,9 +19,9 @@ RUN echo "@edge https://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/reposit
       && rm -rf /tmp/* /var/cache/apk/*
 
 COPY Gemfile Gemfile.lock /bot/
-COPY . /bot
-
 RUN bundle install
+
+COPY . /bot
 VOLUME /bot/source
 
 CMD ["ruby", "./fxdon_bot/bot.rb"]
