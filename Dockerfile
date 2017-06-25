@@ -21,6 +21,8 @@ RUN echo "@edge https://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/reposit
 COPY Gemfile Gemfile.lock /bot/
 RUN bundle install
 
+RUN echo "TZif2UTCTZif2C\nUTC0" > /etc/localtime
+
 COPY . /bot
 VOLUME /bot/source
 
