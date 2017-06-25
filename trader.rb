@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../source/bot'
+require_relative './source/bot'
 
 class Trader
   UNITS_LIMIT = 10_000.freeze
@@ -19,10 +19,12 @@ class Trader
            [order.sell_or_buy, order.unit])
   rescue OandaAPI::RequestError => e
     mes = e.parsed_error_message
-    if mes[:code] == 24 && mes[:message] != 'Instrument trading halted'
+    if mes[:code] == 24 && mes[:message] == 'Instrument trading halted'
+      puts e.message
       b.toot("休場のため、注文は成立しませんでした: %s, Unit: %d" %
              [order.sell_or_buy, order.unit])
     else
+      puts e.message
       b.toot("エラーのため、注文は成立しませんでした: %s, Unit: %d" %
              [order.sell_or_buy, order.unit])
     end
