@@ -9,14 +9,18 @@ class Sqs::FakeSqs < Sqs
   end
 
   def queue_url
-    "#{ENV['FAKE_SQS_ENDPOINT']}/#{queue_name}"
+    "#{endpoint}/#{queue_name}"
   end
 
   private
 
+  def endpoint
+    ENV['FAKE_SQS_ENDPOINT'] || 'http://localhost:4568'
+  end
+
   def client
     @sqs_client ||= Aws::SQS::Client.new(
-      endpoint:          ENV['FAKE_SQS_ENDPOINT'] || 'http://localhost:4568',
+      endpoint:          endpoint,
       secret_access_key: 'secret access key',
       access_key_id:     'access key id',
       region:            'region'
