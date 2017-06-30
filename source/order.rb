@@ -4,6 +4,7 @@ require 'json'
 
 class Order
   class SellOrBuyNotGivenError < StandardError; end
+  class UnitHasAlreadyGivenError < StandardError; end
 
   attr_reader :price, :unit
 
@@ -35,8 +36,17 @@ class Order
     end
   end
 
-  def self.verbs
+  def buy?
     raise NotImplementedError
+  end
+
+  def sell?
+    raise NotImplementedError
+  end
+
+  def unit=(units)
+    raise UnitHasAlreadyGivenError if @unit
+    @unit = units
   end
 
   class << self
@@ -44,6 +54,10 @@ class Order
       j = JSON.parse(json_string, symbolize_names: true)
       klass = get_sell_or_buy_class_by_name(j[:sell_or_buy])
       klass.new(j[:price], j[:unit])
+    end
+
+    def verbs
+      raise NotImplementedError
     end
 
     def all_verbs

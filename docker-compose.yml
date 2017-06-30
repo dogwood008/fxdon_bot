@@ -1,9 +1,29 @@
 version: '3'
 services:
-  bot:
+  daemon:
     build: .
     restart: always
     env_file: .env
-    command: 'ruby source/bot.rb'
+    command: 'bundle exec ruby ./daemon.rb'
+    depends_on:
+      - fake_sqs
+    volumes:
+      - ./source:/bot/source
+  fake_sqs:
+    build: .
+    restart: always
+    env_file: .env
+    ports:
+      - '4568:4568'
+    command: 'bundle exec fake_sqs'
+    volumes:
+      - ./source:/bot/source
+  cron:
+    build: .
+    restart: always
+    env_file: .env
+    command: 'bundle exec ruby ./queue_check.rb'
+    depends_on:
+      - daemon
     volumes:
       - ./source:/bot/source

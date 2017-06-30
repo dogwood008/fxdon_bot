@@ -11,6 +11,9 @@ gem 'fake_sqs'
 gem 'aws-sdk'
 gem 'http-exceptions', git: 'https://github.com/dogwood008/http-exceptions.git'
 gem 'oanda_api', git: 'https://github.com/dogwood008/oanda_api.git'
+gem 'rake'
+gem 'rufus-scheduler'
+gem 'tzinfo-data'
 
 group :development do
   gem 'pry'

@@ -12,4 +12,12 @@ class Order::Sell < Order
   def self.verbs
     VERBS
   end
+
+  def buy?
+    false
+  end
+
+  def sell?
+    true
+  end
 end

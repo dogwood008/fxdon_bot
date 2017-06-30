@@ -42,6 +42,8 @@ GEM
     domain_name (0.5.20170404)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.2.1)
+    et-orbi (1.0.4)
+      tzinfo
     eventmachine (1.2.3)
     fake_sqs (0.3.1)
       builder
@@ -96,6 +98,9 @@ GEM
     rack (2.0.3)
     rack-protection (2.0.0)
       rack
+    rake (12.0.0)
+    rufus-scheduler (3.4.2)
+      et-orbi (~> 1.0)
     sinatra (2.0.0)
       mustermann (~> 1.0)
       rack (~> 2.0)
@@ -105,6 +110,10 @@ GEM
     thor (0.19.4)
     thread_safe (0.3.6)
     tilt (2.0.7)
+    tzinfo (1.2.3)
+      thread_safe (~> 0.1)
+    tzinfo-data (1.2017.2)
+      tzinfo (>= 1.0.0)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.4)
@@ -129,6 +138,9 @@ DEPENDENCIES
   oauth2
   pry
   pry-byebug
+  rake
+  rufus-scheduler
+  tzinfo-data
 
 BUNDLED WITH
    1.15.1
